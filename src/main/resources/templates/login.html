@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="#{login.title}"></title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <button id="theme-toggle" class="theme-toggle">
+        <i class="fas fa-moon dark-icon"></i>
+        <i class="fas fa-sun light-icon"></i>
+    </button>
+
+    <!-- Language Switcher -->
+    <div class="language-switcher">
+       <a href="#" onclick="changeLanguage('en')" class="lang-link" data-lang="en">EN</a>
+        <span style="color: white;">|</span>
+        <a href="#" onclick="changeLanguage('fr')" class="lang-link" data-lang="fr">FR</a>
+    </div>
+
+    <div class="login-container">
+        <div class="logo-container">
+            <!-- Replace with your ONCF logo image -->
+            <img src="/images/logo-oncf.png" alt="ONCF Logo" class="oncf-logo">
+        </div>
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="email" th:text="#{login.email}"></label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            <div class="form-group">
+                <label for="password" th:text="#{login.password}"></label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <button type="submit" th:text="#{login.submit}"></button>
+        </form>
+        <div class="register-link">
+            <p><span th:text="#{login.no_account}"></span> <a href="/register" th:text="#{login.register_here}"></a></p>
+        </div>
+    </div>
+
+    <script>
+    function changeLanguage(lang) {
+        // Get current URL
+        let url = new URL(window.location.href);
+        // Set or update the lang parameter
+        url.searchParams.set('lang', lang);
+        // Reload the page with the new URL
+        window.location.href = url.toString();
+    }
+
+    // Highlight current language
+    document.addEventListener('DOMContentLoaded', function() {
+        const currentLang = new URLSearchParams(window.location.search).get('lang') || 'fr';
+        document.querySelectorAll('.lang-link').forEach(link => {
+            if (link.getAttribute('data-lang') === currentLang) {
+                link.style.fontWeight = 'bold';
+            }
+        });
+    });
+    </script>
+
+    <script src="/js/theme.js"></script>
+    <script src="/js/login.js"></script>
+    <script src="/js/auth.js"></script>
+</body>
+</html> 

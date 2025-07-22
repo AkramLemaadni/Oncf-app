@@ -1,0 +1,418 @@
+body {
+    font-family: 'Roboto', sans-serif; /* Use Roboto font */
+    background: linear-gradient(to right, #1a2a3a, #34495e); /* Dark gradient background */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    color: #ecf0f1;
+}
+
+.login-container {
+    background-color: rgba(255, 255, 255, 0.05); /* Slightly transparent white for a modern look */
+    backdrop-filter: blur(10px); /* Frosted glass effect */
+    padding: 40px;
+    border-radius: 15px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4); /* Stronger, more diffused shadow */
+    width: 380px;
+    max-width: 90%;
+    text-align: center;
+    border: 1px solid rgba(255, 255, 255, 0.1); /* Subtle border */
+    box-sizing: border-box;
+}
+
+.logo-container {
+    margin-bottom: 30px;
+}
+
+.oncf-logo {
+    width: 120px; /* Adjust as needed */
+    height: auto;
+}
+
+.login-container h2 {
+    margin-bottom: 30px;
+    color: #ecf0f1; /* Light text for headings */
+    font-size: 2.2em;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+.form-group {
+    margin-bottom: 25px;
+    text-align: left;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 10px;
+    color: #bdc3c7; /* Lighter grey for labels */
+    font-weight: 400;
+    font-size: 0.9em;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 14px;
+    background-color: rgba(255, 255, 255, 0.1); /* Slightly transparent input background */
+    border: 1px solid rgba(255, 255, 255, 0.2); /* Subtle white border */
+    border-radius: 8px;
+    box-sizing: border-box;
+    font-size: 1.1em;
+    color: #ecf0f1;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.form-group input::placeholder {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.form-group input:focus {
+    border-color: #e67e22; /* ONCF Orange on focus */
+    box-shadow: 0 0 10px rgba(230, 126, 34, 0.5); /* Orange glow on focus */
+    outline: none;
+}
+
+.role-selection {
+    display: flex;
+    gap: 15px;
+    margin-top: 10px;
+    color: #bdc3c7;
+}
+
+.role-selection input[type="radio"] {
+    margin-right: 5px;
+    accent-color: #e67e22; /* Accent color for radio buttons */
+}
+
+.role-selection label {
+    font-weight: normal; /* Override bold for radio labels */
+    display: inline-block;
+    margin-bottom: 0;
+    color: #bdc3c7;
+}
+
+button[type="submit"] {
+    background: linear-gradient(to right, #e67e22, #f39c12); /* Orange gradient button */
+    color: white;
+    padding: 15px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1.2em;
+    font-weight: 700;
+    width: 100%;
+    transition: background 0.3s ease, transform 0.2s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+button[type="submit"]:hover {
+    background: linear-gradient(to right, #d35400, #e67e22); /* Darker orange gradient on hover */
+    transform: translateY(-2px); /* Slight lift effect */
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+.register-link {
+    margin-top: 20px;
+    font-size: 0.9em;
+}
+
+.register-link p {
+    color: #bdc3c7;
+}
+
+.register-link a {
+    color: #e67e22; /* ONCF Orange for the link */
+    text-decoration: none;
+    font-weight: bold;
+    transition: color 0.3s ease;
+}
+
+.register-link a:hover {
+    color: #f39c12; /* Lighter orange on hover */
+    text-decoration: underline;
+}
+
+/* Theme Toggle Button Styling */
+.theme-toggle {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background-color: transparent; /* Remove background */
+    color: #ecf0f1; /* Light color for icons in dark mode */
+    border: none; /* Remove border */
+    padding: 10px; /* Adjust padding for size */
+    border-radius: 50%; /* Make it circular */
+    cursor: pointer;
+    font-size: 1.5em; /* Larger icons */
+    transition: color 0.3s ease, background-color 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px; /* Fixed width for circular shape */
+    height: 40px; /* Fixed height for circular shape */
+}
+
+.theme-toggle:hover {
+    background-color: rgba(255, 255, 255, 0.1); /* Subtle background on hover */
+}
+
+.theme-toggle .dark-icon, .theme-toggle .light-icon {
+    position: absolute;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+/* Initially show sun icon (dark mode) and hide moon icon */
+.theme-toggle .dark-icon {
+    opacity: 0;
+    transform: scale(0);
+}
+
+.theme-toggle .light-icon {
+    opacity: 1;
+    transform: scale(1);
+}
+
+/* When in light mode, show moon icon and hide sun icon */
+body.light-mode .theme-toggle .dark-icon {
+    opacity: 1;
+    transform: scale(1);
+}
+
+body.light-mode .theme-toggle .light-icon {
+    opacity: 0;
+    transform: scale(0);
+}
+
+body.light-mode .theme-toggle {
+    color: #2c3e50; /* Darker color for icons in light mode */
+}
+
+body.light-mode .theme-toggle:hover {
+    background-color: rgba(0, 0, 0, 0.1); /* Subtle background on hover in light mode */
+}
+
+/* Language Switcher Styling */
+.language-switcher {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    display: flex;
+    gap: 5px;
+    font-size: 0.9em;
+}
+
+.language-switcher a {
+    color: #ecf0f1; /* Light color for links in dark mode */
+    text-decoration: none;
+    padding: 5px 8px;
+    border-radius: 5px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.language-switcher a:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.language-switcher span {
+    color: #ecf0f1; /* Light color for separator in dark mode */
+}
+
+body.light-mode .language-switcher a {
+    color: #2c3e50; /* Darker color for links in light mode */
+}
+
+body.light-mode .language-switcher a:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+body.light-mode .language-switcher span {
+    color: #2c3e50; /* Darker color for separator in light mode */
+}
+
+
+/* Light Mode Styles */
+body.light-mode {
+    background: linear-gradient(to right, #f0f4f8, #d9e2ec); /* Light gradient background */
+    color: #34495e;
+}
+
+body.light-mode .login-container {
+    background-color: rgba(255, 255, 255, 0.9); /* Opaque white */
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+body.light-mode .login-container h2 {
+    color: #2c3e50;
+}
+
+body.light-mode .form-group label {
+    color: #555;
+}
+
+body.light-mode .form-group input {
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    color: #333;
+}
+
+body.light-mode .form-group input::placeholder {
+    color: #aaa;
+}
+
+body.light-mode .form-group input:focus {
+    border-color: #0056b3; /* A blue accent for light mode focus */
+    box-shadow: 0 0 10px rgba(0, 86, 179, 0.3);
+}
+
+body.light-mode .role-selection {
+    color: #34495e;
+}
+
+body.light-mode .role-selection input[type="radio"] {
+    accent-color: #007bff; /* Accent color for radio buttons in light mode */
+}
+
+body.light-mode .role-selection label {
+    color: #555;
+}
+
+body.light-mode button[type="submit"] {
+    background: linear-gradient(to right, #007bff, #0056b3); /* Blue gradient button for light mode */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+body.light-mode button[type="submit"]:hover {
+    background: linear-gradient(to right, #0056b3, #004494);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+body.light-mode .register-link p {
+    color: #666;
+}
+
+body.light-mode .register-link a {
+    color: #007bff; /* Blue for the link in light mode */
+}
+
+/* Navbar Styling */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #2c3e50; /* Dark background for navbar, consistent with dark theme */
+    padding: 10px 40px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    width: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+    box-sizing: border-box;
+}
+
+.navbar-brand {
+    display: flex;
+    align-items: center;
+}
+
+.navbar-logo {
+    height: 40px; /* Adjust logo size */
+    margin-right: 15px;
+}
+
+.navbar-brand span {
+    color: #ecf0f1; /* Light text color for brand name */
+    font-size: 1.5em;
+    font-weight: 700;
+}
+
+.navbar-nav {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    gap: 30px; /* Space between nav items */
+}
+
+.nav-item .nav-link {
+    color: #bdc3c7; /* Lighter grey for nav links */
+    text-decoration: none;
+    font-size: 1.1em;
+    padding: 8px 0;
+    position: relative;
+    transition: color 0.3s ease;
+}
+
+.nav-item .nav-link::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -5px;
+    width: 0;
+    height: 3px;
+    background-color: #e67e22; /* ONCF Orange underline */
+    transition: width 0.3s ease;
+}
+
+.nav-item .nav-link:hover {
+    color: #ecf0f1;
+}
+
+.nav-item .nav-link:hover::after {
+    width: 100%;
+}
+
+.logout-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: 'Roboto', sans-serif;
+    font-weight: normal;
+}
+
+/* Main Content Area */
+.main-content {
+    padding: 100px 40px 40px;
+    /* Adjust padding-top to account for fixed navbar height */
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    height: 100vh;
+    box-sizing: border-box;
+}
+
+/* Light Mode Navbar Styling */
+body.light-mode .navbar {
+    background-color: #ecf0f1; /* Lighter background for navbar in light mode */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+body.light-mode .navbar-brand span {
+    color: #2c3e50; /* Darker text color for brand name in light mode */
+}
+
+body.light-mode .nav-item .nav-link {
+    color: #555; /* Darker grey for nav links in light mode */
+}
+
+body.light-mode .nav-item .nav-link::after {
+    background-color: #007bff; /* Blue underline for light mode */
+}
+
+body.light-mode .nav-item .nav-link:hover {
+    color: #2c3e50;
+}
+
+body.light-mode .logout-button {
+    color: #555;
+}
+
+body.light-mode .logout-button:hover {
+    color: #2c3e50;
+} 
