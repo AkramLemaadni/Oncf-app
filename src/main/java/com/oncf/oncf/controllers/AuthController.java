@@ -14,10 +14,13 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
+import java.util.HashMap;
+import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,6 +34,9 @@ public class AuthController {
 
     @Autowired
     private JwtService jwtService;
+    
+    @Autowired
+    private UserDetailsService userDetailsService;
 
     @Autowired
     private UserService userService;
@@ -120,5 +126,47 @@ public class AuthController {
     public ResponseEntity<?> testEndpoint() {
         logger.info("Test endpoint called");
         return ResponseEntity.ok("API is working!");
+    }
+    
+    @GetMapping("/verify")
+    public ResponseEntity<?> verifyToken(@RequestHeader("Authorization") String authHeader) {
+        logger.info("Token verification request received");
+        try {
+            if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+                logger.warn("Invalid Authorization header format");
+                return ResponseEntity.status(401).body("Invalid token format");
+            }
+            
+            String jwt = authHeader.substring(7);
+            String username = jwtService.extractUsername(jwt);
+            
+            if (username == null) {
+                logger.warn("Could not extract username from token");
+                return ResponseEntity.status(401).body("Invalid token");
+            }
+            
+            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+            
+            if (jwtService.isTokenValid(jwt, userDetails)) {
+                // Get the user's role and other info
+                Optional<User> user = userService.getUserByEmail(username);
+                if (user.isPresent()) {
+                    Map<String, Object> response = new HashMap<>();
+                    response.put("valid", true);
+                    response.put("email", username);
+                    response.put("role", user.get().getRole().toString());
+                    response.put("name", user.get().getFirstName() + " " + user.get().getLastName());
+                    
+                    logger.info("Token verified successfully for user: {}", username);
+                    return ResponseEntity.ok(response);
+                }
+            }
+            
+            logger.warn("Token validation failed");
+            return ResponseEntity.status(401).body("Invalid token");
+        } catch (Exception e) {
+            logger.error("Token verification error: {}", e.getMessage());
+            return ResponseEntity.status(500).body("Error verifying token: " + e.getMessage());
+        }
     }
 } 

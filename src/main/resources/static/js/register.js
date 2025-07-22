@@ -56,11 +56,15 @@ document.addEventListener('DOMContentLoaded', () => {
             role: role
         };
 
-        // Add responsableId only if the role is TECHNICIAN and it's provided
+        // Add supervisorId only if the role is TECHNICIAN and it's provided
         if (role === 'TECHNICIAN' && responsableId) {
-            registerData.responsableId = parseInt(responsableId);
+            registerData.supervisorId = parseInt(responsableId, 10); // Use base 10 for parsing
+            if (isNaN(registerData.supervisorId)) {
+                alert('Please enter a valid Supervisor ID (must be a number)!');
+                return;
+            }
         } else if (role === 'TECHNICIAN' && !responsableId) {
-            alert('Responsable ID is required for a Technician!');
+            alert('Supervisor ID is required for a Technician!');
             return;
         }
 
@@ -75,7 +79,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (response.ok) {
                 alert('Registration successful!');
-                window.location.href = '/'; // Redirect to login page or home
+                window.location.href = '/login'; // Redirect to login page
             } else {
                 const errorData = await response.text();
                 alert(`Registration failed: ${errorData}`);

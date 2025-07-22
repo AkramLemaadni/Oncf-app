@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title th:text="#{engineer.home.title}"></title>
     <script src="/js/auth.js"></script>
+    <script src="/js/navigation.js"></script>
     <link rel="stylesheet" href="/css/style.css">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <!-- Font Awesome for icons -->
@@ -21,9 +22,9 @@
         
         .theme-toggle {
             position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background-color: transparent;
+            bottom: 30px;
+            right: 30px;
+            background-color: rgba(0, 0, 0, 0.3);
             color: #ecf0f1;
             border: none;
             padding: 10px;
@@ -34,48 +35,31 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            width: 40px;
-            height: 40px;
+            width: 45px;
+            height: 45px;
             z-index: 1000;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
         }
 
         .theme-toggle:hover {
-            background-color: rgba(255, 255, 255, 0.1);
+            background-color: rgba(255, 255, 255, 0.2);
             transform: scale(1.1);
         }
 
         .theme-toggle .dark-icon,
         .theme-toggle .light-icon {
             position: absolute;
-            transition: opacity 0.3s ease, transform 0.3s ease;
-        }
-
-        .theme-toggle .dark-icon {
-            opacity: 0;
-            transform: scale(0);
-        }
-
-        .theme-toggle .light-icon {
-            opacity: 1;
-            transform: scale(1);
+            transition: opacity 0.3s ease;
         }
 
         body.light-mode .theme-toggle {
+            background-color: rgba(255, 255, 255, 0.5);
             color: #2c3e50;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
 
         body.light-mode .theme-toggle:hover {
-            background-color: rgba(0, 0, 0, 0.1);
-        }
-
-        body.light-mode .theme-toggle .dark-icon {
-            opacity: 1;
-            transform: scale(1);
-        }
-
-        body.light-mode .theme-toggle .light-icon {
-            opacity: 0;
-            transform: scale(0);
+            background-color: rgba(255, 255, 255, 0.8);
         }
         
         .language-switcher {
@@ -215,19 +199,19 @@
 
     <nav class="navbar">
         <div class="navbar-brand">
-            <img src="/images/logo-oncf.png" alt="ONCF Logo" class="navbar-logo">
+            <img src="/images/logo-oncf.png" alt="ONCF Logo" class="navbar-logo" style="cursor: pointer;" onclick="event.preventDefault(); console.log('Logo clicked - staying on current page');">
             <span class="welcome-text" th:text="#{engineer.home.welcome(${fullName})}"></span>
         </div>
         
         <ul class="navbar-nav">
             <li class="nav-item">
-                <a href="/engineer/stats" th:text="#{engineer.navbar.stats}" class="nav-link"></a>
+                <a href="javascript:void(0)" onclick="navigateTo('/engineer/stats')" th:text="#{engineer.navbar.stats}" class="nav-link"></a>
             </li>
             <li class="nav-item">
-                <a href="/engineer/technicians" th:text="#{engineer.navbar.technicians}" class="nav-link"></a>
+                <a href="javascript:void(0)" onclick="navigateTo('/engineer/technicians')" th:text="#{engineer.navbar.technicians}" class="nav-link"></a>
             </li>
             <li class="nav-item">
-                <a href="/engineer/interns" th:text="#{engineer.navbar.interns}" class="nav-link"></a>
+                <a href="javascript:void(0)" onclick="navigateTo('/engineer/interns')" th:text="#{engineer.navbar.interns}" class="nav-link"></a>
             </li>
             <li class="nav-item">
                 <button onclick="handleLogout()" th:text="#{engineer.navbar.logout}" class="nav-link logout-button"></button>
@@ -238,48 +222,16 @@
     <div class="main-content">
         <p th:text="#{engineer.dashboard.content}">This is the main content area for the Engineer Dashboard.</p>
     </div>
-
-    <!-- Theme toggle button with login page style -->
-    <button id="theme-toggle" class="theme-toggle" title="Toggle dark/light mode">
-        <i class="fas fa-moon dark-icon"></i>
-        <i class="fas fa-sun light-icon"></i>
-    </button>
+    
+    <!-- Theme toggle button positioned at the bottom of the page -->
+    <div style="position: relative; min-height: 100px;">
+        <button id="theme-toggle" class="theme-toggle" title="Toggle dark/light mode">
+            <i class="fas fa-moon dark-icon"></i>
+            <i class="fas fa-sun light-icon"></i>
+        </button>
+    </div>
 
     <script src="/js/theme.js"></script>
-    <script>
-        // Theme toggle functionality
-        document.addEventListener('DOMContentLoaded', function() {
-            const themeToggle = document.getElementById('theme-toggle');
-            const darkIcon = document.querySelector('.dark-icon');
-            const lightIcon = document.querySelector('.light-icon');
-            const body = document.body;
-            
-            // Check if theme preference is stored
-            const currentTheme = localStorage.getItem('theme');
-            if (currentTheme) {
-                body.classList.add(currentTheme + '-mode');
-                if (currentTheme === 'light') {
-                    darkIcon.style.display = 'none';
-                    lightIcon.style.display = 'block';
-                }
-            }
-            
-            themeToggle.addEventListener('click', function() {
-                if (body.classList.contains('light-mode')) {
-                    body.classList.remove('light-mode');
-                    body.classList.add('dark-mode');
-                    localStorage.setItem('theme', 'dark');
-                    darkIcon.style.display = 'block';
-                    lightIcon.style.display = 'none';
-                } else {
-                    body.classList.remove('dark-mode');
-                    body.classList.add('light-mode');
-                    localStorage.setItem('theme', 'light');
-                    darkIcon.style.display = 'none';
-                    lightIcon.style.display = 'block';
-                }
-            });
-        });
-    </script>
+    <!-- Navigation.js provides the navigateTo function -->
 </body>
 </html> 

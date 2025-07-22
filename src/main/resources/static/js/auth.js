@@ -39,11 +39,20 @@ document.addEventListener('DOMContentLoaded', () => {
             console.log(`No token available for request to ${args[0]}`);
         }
         
-        return originalFetch.apply(window, args);
+        return originalFetch.apply(window, args).then(response => {
+            if (response.status === 401) {
+                // Token might be expired or invalid
+                console.error("Authentication failed - redirecting to login");
+                localStorage.removeItem('jwtToken');
+                window.location.href = '/login';
+                return Promise.reject('Authentication failed');
+            }
+            return response;
+        });
     };
     
     // Add Authorization header with JWT token to all XMLHttpRequest
-    const originalOpen = XMLHttpRequest.prototype.open;
+    const originalXHROpen = XMLHttpRequest.prototype.open;
     XMLHttpRequest.prototype.open = function() {
         const token = localStorage.getItem('jwtToken');
         const args = Array.prototype.slice.call(arguments);
@@ -64,7 +73,16 @@ document.addEventListener('DOMContentLoaded', () => {
             return originalSend.apply(xhr, arguments);
         };
         
-        return originalOpen.apply(xhr, args);
+        // Handle 401 responses
+        xhr.addEventListener('load', function() {
+            if (xhr.status === 401) {
+                console.error("Authentication failed - redirecting to login");
+                localStorage.removeItem('jwtToken');
+                window.location.href = '/login';
+            }
+        });
+        
+        return originalXHROpen.apply(xhr, args);
     };
     
     // Check if user is logged in
@@ -78,8 +96,36 @@ document.addEventListener('DOMContentLoaded', () => {
     if (isProtectedPage && !isLoggedIn) {
         console.log("Protected page detected but user is not logged in. Redirecting to login page.");
         window.location.href = '/login';
+        return;
+    }
+
+    // If logged in and on a protected page, verify the token
+    if (isLoggedIn && isProtectedPage) {
+        verifyToken();
     }
 });
+
+// Function to verify token validity
+async function verifyToken() {
+    const token = localStorage.getItem('jwtToken');
+    if (!token) return;
+
+    try {
+        const response = await fetch('/api/auth/verify', {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+
+        if (!response.ok) {
+            console.error("Token verification failed");
+            localStorage.removeItem('jwtToken');
+            window.location.href = '/login';
+        }
+    } catch (error) {
+        console.error("Error verifying token:", error);
+    }
+}
 
 // Global logout function
 window.handleLogout = async function() {
@@ -97,18 +143,39 @@ window.handleLogout = async function() {
             });
 
             console.log("Logout response status:", response.status);
-            
-            // Clear token regardless of response
-            localStorage.removeItem('jwtToken');
-            console.log("JWT token removed from localStorage");
-        } else {
-            console.log("No token found in localStorage");
         }
     } catch (error) {
         console.error("Error during logout:", error);
     } finally {
-        // Always redirect to login page
-        console.log("Redirecting to login page...");
+        // Clear token and redirect to login
+        localStorage.removeItem('jwtToken');
         window.location.href = '/login';
     }
+};
+
+// Function to handle authenticated navigation
+window.navigateTo = function(url) {
+    const token = localStorage.getItem('jwtToken');
+    if (!token) {
+        console.error("No JWT token found, redirecting to login");
+        window.location.href = '/login';
+        return;
+    }
+
+    // Create a temporary form to submit the request with the token
+    const form = document.createElement('form');
+    form.method = 'GET';
+    form.action = url;
+    form.style.display = 'none';
+
+    // Add the token as a hidden field
+    const tokenField = document.createElement('input');
+    tokenField.type = 'hidden';
+    tokenField.name = 'Authorization';
+    tokenField.value = `Bearer ${token}`;
+    form.appendChild(tokenField);
+
+    // Submit the form
+    document.body.appendChild(form);
+    form.submit();
 }; 

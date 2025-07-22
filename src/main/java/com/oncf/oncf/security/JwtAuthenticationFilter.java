@@ -40,31 +40,32 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
-        final String authHeader = request.getHeader("Authorization");
-        final String jwt;
-        final String userEmail;
+        String jwt = null;
+        String userEmail = null;
+        String requestURI = request.getRequestURI();
 
-        logger.debug("Processing request: {}", request.getRequestURI());
+        logger.debug("Processing request: {}", requestURI);
         
+        // Initialize userDetailsService if not already done
         if (userDetailsService == null) {
             userDetailsService = applicationContext.getBean(UserDetailsService.class);
         }
 
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            logger.debug("No valid Authorization header found for request: {}", request.getRequestURI());
+        // Try to get JWT token from different sources
+        jwt = extractToken(request);
+        
+        if (jwt == null) {
+            logger.debug("No JWT token found for request: {}", requestURI);
             filterChain.doFilter(request, response);
             return;
         }
 
-        jwt = authHeader.substring(7);
-        logger.debug("JWT token found for request: {}", request.getRequestURI());
-        
         try {
             userEmail = jwtService.extractUsername(jwt);
+            logger.debug("Extracted username from JWT: {}", userEmail);
             
             if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
-                logger.debug("User found: {}, Authorities: {}", userEmail, userDetails.getAuthorities());
                 
                 if (jwtService.isTokenValid(jwt, userDetails)) {
                     UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
@@ -74,9 +75,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     );
                     authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(authToken);
-                    logger.debug("Authentication successful for user: {}", userEmail);
+                    logger.debug("Authentication successful for user: {}, Authorities: {}", 
+                               userEmail, userDetails.getAuthorities());
                 } else {
-                    logger.debug("Token validation failed for user: {}", userEmail);
+                    logger.warn("Token validation failed for user: {}", userEmail);
                 }
             }
         } catch (Exception e) {
@@ -84,5 +86,30 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
         
         filterChain.doFilter(request, response);
+    }
+
+    private String extractToken(HttpServletRequest request) {
+        // Try Authorization header first
+        String authHeader = request.getHeader("Authorization");
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            logger.debug("Found JWT token in Authorization header");
+            return authHeader.substring(7);
+        }
+
+        // Try request parameter
+        String paramToken = request.getParameter("Authorization");
+        if (paramToken != null && paramToken.startsWith("Bearer ")) {
+            logger.debug("Found JWT token in request parameter");
+            return paramToken.substring(7);
+        }
+
+        // Try custom header
+        String customHeader = request.getHeader("X-JWT-Token");
+        if (customHeader != null) {
+            logger.debug("Found JWT token in custom header");
+            return customHeader;
+        }
+
+        return null;
     }
 } 

@@ -44,7 +44,7 @@ public class SecurityConfig {
                 // Public resources
                 .requestMatchers("/css/**", "/js/**", "/images/**", "/favicon.ico").permitAll()
                 .requestMatchers("/", "/login", "/register").permitAll()
-                .requestMatchers("/api/auth/**").permitAll()
+                .requestMatchers("/api/auth/login", "/api/auth/register", "/api/auth/test").permitAll()
                 
                 // Engineer specific paths - require ENGINEER role
                 .requestMatchers("/engineer/**").hasRole("ENGINEER")
@@ -61,18 +61,6 @@ public class SecurityConfig {
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             )
             .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
-            .logout(logout -> logout
-                .logoutUrl("/api/auth/logout")
-                .logoutSuccessHandler((request, response, authentication) -> {
-                    response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-                    response.setStatus(200);
-                    response.getWriter().write("{\"message\":\"Logged out successfully\"}");
-                })
-                .invalidateHttpSession(true)
-                .clearAuthentication(true)
-                .deleteCookies("JSESSIONID", "language")
-                .permitAll()
-            )
             .exceptionHandling(handling -> handling
                 .accessDeniedHandler((request, response, accessDeniedException) -> {
                     logger.error("Access denied error: {}", accessDeniedException.getMessage());
