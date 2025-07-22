@@ -43,11 +43,12 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 // Public resources
                 .requestMatchers("/css/**", "/js/**", "/images/**", "/favicon.ico").permitAll()
-                .requestMatchers("/", "/login", "/register").permitAll()
-                .requestMatchers("/api/auth/login", "/api/auth/register", "/api/auth/test").permitAll()
+                .requestMatchers("/", "/login", "/register", "/test-login", "/api-test").permitAll()
+                .requestMatchers("/api/auth/login", "/api/auth/register", "/api/auth/test", "/api/auth/verify").permitAll()
                 
                 // Engineer specific paths - require ENGINEER role
-                .requestMatchers("/engineer/**").hasRole("ENGINEER")
+                .requestMatchers(HttpMethod.GET, "/engineer/**").hasRole("ENGINEER")
+                .requestMatchers(HttpMethod.POST, "/engineer/**").hasRole("ENGINEER")
                 .requestMatchers("/api/engineers/**").hasRole("ENGINEER")
                 
                 // Technician specific paths - require TECHNICIAN role
@@ -64,15 +65,23 @@ public class SecurityConfig {
             .exceptionHandling(handling -> handling
                 .accessDeniedHandler((request, response, accessDeniedException) -> {
                     logger.error("Access denied error: {}", accessDeniedException.getMessage());
-                    response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-                    response.setStatus(403);
-                    response.getWriter().write("{\"error\":\"Access Denied\",\"message\":\"" + accessDeniedException.getMessage() + "\"}");
+                    if (request.getHeader("Accept") != null && request.getHeader("Accept").contains("application/json")) {
+                        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+                        response.setStatus(403);
+                        response.getWriter().write("{\"error\":\"Access Denied\",\"message\":\"" + accessDeniedException.getMessage() + "\"}");
+                    } else {
+                        response.sendRedirect("/login");
+                    }
                 })
                 .authenticationEntryPoint((request, response, authException) -> {
                     logger.error("Authentication error: {}", authException.getMessage());
-                    response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-                    response.setStatus(401);
-                    response.getWriter().write("{\"error\":\"Authentication Failed\",\"message\":\"" + authException.getMessage() + "\"}");
+                    if (request.getHeader("Accept") != null && request.getHeader("Accept").contains("application/json")) {
+                        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+                        response.setStatus(401);
+                        response.getWriter().write("{\"error\":\"Authentication Failed\",\"message\":\"" + authException.getMessage() + "\"}");
+                    } else {
+                        response.sendRedirect("/login");
+                    }
                 })
             );
         

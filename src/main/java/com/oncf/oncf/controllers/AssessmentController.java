@@ -16,6 +16,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/engineer")
@@ -53,33 +54,39 @@ public class AssessmentController {
     
     @PostMapping("/submit-assessment")
     @PreAuthorize("hasRole('ENGINEER')")
-    public String submitAssessment(@ModelAttribute("assessment") Assessment assessment, 
-                                  @RequestParam("technicianId") Long technicianId,
-                                  @RequestParam(value = "jwtToken", required = false) String jwtToken,
-                                  RedirectAttributes redirectAttributes) {
-        // Get the authenticated engineer
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        User engineer = userService.getUserByEmail(auth.getName())
-            .orElseThrow(() -> new RuntimeException("Engineer not found"));
-        
-        // Get the technician being assessed
-        User technician = userService.getUserById(technicianId)
-            .orElseThrow(() -> new RuntimeException("Technician not found"));
-        
-        // Set assessment properties
-        assessment.setAssessor(engineer);
-        assessment.setAssessedUser(technician);
-        assessment.setDate(LocalDate.now());
-        
-        // Save the assessment
+    @ResponseBody
+    public ResponseEntity<?> submitAssessment(@RequestBody Map<String, Object> payload) {
         try {
+            // Get the authenticated engineer
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            User engineer = userService.getUserByEmail(auth.getName())
+                .orElseThrow(() -> new RuntimeException("Engineer not found"));
+            
+            // Get the technician being assessed
+            Long technicianId = Long.parseLong(payload.get("technicianId").toString());
+            User technician = userService.getUserById(technicianId)
+                .orElseThrow(() -> new RuntimeException("Technician not found"));
+            
+            // Verify this technician is supervised by this engineer
+            if (technician.getSupervisor() == null || !technician.getSupervisor().getId().equals(engineer.getId())) {
+                return ResponseEntity.badRequest().body("Access denied: This technician is not under your supervision");
+            }
+            
+            // Create and populate the assessment
+            Assessment assessment = new Assessment();
+            assessment.setAssessor(engineer);
+            assessment.setAssessedUser(technician);
+            assessment.setDate(LocalDate.now());
+            assessment.setScore((Integer) payload.get("score"));
+            assessment.setComments((String) payload.get("comments"));
+            
+            // Save the assessment
             assessmentService.saveAssessment(assessment);
-            redirectAttributes.addFlashAttribute("successMessage", "Assessment submitted successfully");
+            
+            return ResponseEntity.ok().body("Assessment submitted successfully");
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Error submitting assessment: " + e.getMessage());
+            return ResponseEntity.badRequest().body("Error submitting assessment: " + e.getMessage());
         }
-        
-        return "redirect:/engineer/technicians";
     }
     
     // REST API endpoints for assessments
