@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (MiKTeX 24.1) (preloaded format=pdflatex 2025.7.29)  29 JUL 2025 18:03
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (MiKTeX 24.1) (preloaded format=pdflatex 2025.7.29)  29 JUL 2025 19:05
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -537,7 +537,7 @@ Package hyperref Info: Link coloring OFF on input line 57.
                    N
 l.23 [Nom de l'Ã©tudiant]
                          
-? R
+? r
 OK, entering \nonstopmode...
 ! Illegal unit of measure (pt inserted).
 <to be read again> 
@@ -640,60 +640,63 @@ spelling (e.g., `I\hbox'). Otherwise just continue,
 and I'll forget about whatever was undefined.
 
 (dedicaces.tex
-Runaway argument?
-{\large Ã€ mes chers parents, \\ pour leur amour inconditionnel, leur\ETC.
-! Paragraph ended before \text@command was complete.
-<to be read again> 
-                   \par 
-l.20 }
-      
-I suspect you've forgotten a `}', causing me to apply this
-control sequence to too much text. How can we recover?
-My plan is to forget the whole thing and hope for the best.
-
-
 pdfTeX warning (ext4): destination with the same identifier (name{page.1}) has 
 been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.20 }
-       [1
+l.23 \newpage
+              [1
+
+]) (remerciements.tex [2
+
+]) (acronymes.tex [3
 
 ]
-! Extra }, or forgotten \endgroup.
-<recently read> \egroup 
-                        
-l.20 }
-      
-I've deleted a group-closing symbol because it seems to be
-spurious, as in `$x}$'. But perhaps the } is legitimate and
-you forgot something else, as in `\hbox{$x}'. In such cases
-the way to recover is to insert both the forgotten and the
-deleted material, e.g., by typing `I$}'.
-
-[2]) (remerciements.tex [3
-
-]) (acronymes.tex [4
-
-]
-Overfull \vbox (33.14525pt too high) has occurred while \output is active []
+Overfull \vbox (13.14525pt too high) has occurred while \output is active []
 
 
-[5]) (resume.tex [6
+[4]) (resume.tex
 
-]) (main.toc [7])
+! LaTeX Error: Environment justify undefined.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.4 \begin{justify}
+                   
+Your command was ignored.
+Type  I <command> <return>  to replace it with another command,
+or  <return>  to continue without it.
+
+
+! LaTeX Error: \begin{document} ended by \end{justify}.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.8 \end{justify}
+                 
+Your command was ignored.
+Type  I <command> <return>  to replace it with another command,
+or  <return>  to continue without it.
+
+[5
+
+]) (main.toc [6])
 \tf@toc=\write4
 \openout4 = `main.toc'.
 
- [8] (main.lof)
+ [7] (main.lof)
 \tf@lof=\write5
 \openout5 = `main.lof'.
 
- [9] (main.lot)
+ [8] (main.lot)
 \tf@lot=\write6
 \openout6 = `main.lot'.
 
- [10]
+ [9]
 ! Undefined control sequence.
 l.93 \mainmatter
                 
@@ -703,21 +706,21 @@ misspelled it (e.g., `\hobx'), type `I' and the correct
 spelling (e.g., `I\hbox'). Otherwise just continue,
 and I'll forget about whatever was undefined.
 
-(introduction_generale.tex [11
+(introduction_generale.tex [10
 
-] [12]) (chapitre1.tex
+] [11]) (chapitre1.tex
 Chapitre 1.
-[13
+[12
 
-] [14] [15])
+] [13] [14])
 Overfull \hbox (4.7615pt too wide) in paragraph at lines 161--100
 []\T1/ptm/m/n/12 Ce pro-jet s'ins-crit dans une dé-marche d'amé-lio-ra-tion con
 ti-nue des pro-ces-sus in-ternes de l'ONCF
  []
 
-(conclusion_generale.tex [16] [17
+(conclusion_generale.tex [15] [16
 
-] [18] [19]) (bibliographie.tex [20
+] [17] [18]) (bibliographie.tex [19
 
 ]
 LaTeX Font Info:    Trying to load font information for T1+pcr on input line 7.
@@ -731,9 +734,9 @@ Underfull \hbox (badness 1292) in paragraph at lines 46--47
 -cu-men-ta-tion\T1/ptm/m/n/12 . [En ligne]. Dis-po-nible sur :
  []
 
-[21
+[20
 
-] [22]) (annexes.tex
+] [21]) (annexes.tex
 Annexe A.
 
 Overfull \hbox (12.9293pt too wide) in paragraph at lines 48--48
@@ -741,32 +744,32 @@ Overfull \hbox (12.9293pt too wide) in paragraph at lines 48--48
 All()[] 
  []
 
-[23
+[22
 
-] [24]) [25] (main.aux)
+] [23]) [24] (main.aux)
  ***********
 LaTeX2e <2023-11-01> patch level 1
 L3 programming layer <2024-01-04>
  ***********
 Package rerunfilecheck Info: File `main.out' has not changed.
-(rerunfilecheck)             Checksum: E7119D7715CE9D5C5F6B4EDD5C358DE2;7550.
+(rerunfilecheck)             Checksum: CE2AB1AC01D78772BBE3EDC3A50DB287;7567.
  ) 
 Here is how much of TeX's memory you used:
- 13480 strings out of 474486
- 215202 string characters out of 5742811
+ 13478 strings out of 474486
+ 215184 string characters out of 5742811
  1937542 words of memory out of 5000000
  35445 multiletter control sequences out of 15000+600000
- 598193 words of font info for 81 fonts, out of 8000000 for 9000
+ 595345 words of font info for 79 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 75i,12n,79p,500b,719s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 75i,12n,79p,1891b,719s stack positions out of 10000i,1000n,20000p,200000b,200000s
 <C:/Users/Ultrapc/AppData/Local/Programs/MiKTeX/fonts/type1/urw/courier/ucrr8
 a.pfb><C:/Users/Ultrapc/AppData/Local/Programs/MiKTeX/fonts/type1/urw/times/utm
 b8a.pfb><C:/Users/Ultrapc/AppData/Local/Programs/MiKTeX/fonts/type1/urw/times/u
 tmr8a.pfb><C:/Users/Ultrapc/AppData/Local/Programs/MiKTeX/fonts/type1/urw/times
 /utmri8a.pfb>
-Output written on main.pdf (26 pages, 197346 bytes).
+Output written on main.pdf (25 pages, 195849 bytes).
 PDF statistics:
- 426 PDF objects out of 1000 (max. 8388607)
- 95 named destinations out of 1000 (max. 500000)
+ 422 PDF objects out of 1000 (max. 8388607)
+ 94 named destinations out of 1000 (max. 500000)
  350 words of extra memory for PDF output out of 10000 (max. 10000000)
 

@@ -41,14 +41,14 @@
 }
 
 % Configuration des titres de chapitres
-\titleformat{\chapter}[display]{\thispagestyle{chapter}\normalfont\fontsize{16}{19}\bfseries}{\chaptertitlename\ \thechapter}{20pt}{\fontsize{16}{19}\bfseries}
-\titlespacing*{\chapter}{0pt}{50pt}{40pt}
+\titleformat{\chapter}[hang]{\thispagestyle{chapter}\normalfont\fontsize{16}{19}\bfseries}{Chapitre \Roman{chapter}:}{1em}{\fontsize{16}{19}\bfseries}
+\titlespacing*{\chapter}{0pt}{50pt}{20pt}
 
 % Configuration des sections
 \titleformat{\section}
-{\normalfont\fontsize{14}{17}\bfseries}{\thesection}{1em}{}
+{\normalfont\fontsize{14}{17}\bfseries}{\Roman{chapter}.\arabic{section}.}{1em}{}
 \titleformat{\subsection}
-{\normalfont\fontsize{12}{15}\bfseries}{\thesubsection}{1em}{}
+{\normalfont\fontsize{12}{15}\bfseries}{\Roman{chapter}.\arabic{section}.\arabic{subsection}.}{1em}{}
 
 % Configuration du sommaire
 \renewcommand{\cfttoctitlefont}{\hfill\Large\bfseries}
