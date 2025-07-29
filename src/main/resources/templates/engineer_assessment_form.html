@@ -7,217 +7,382 @@
     <script src="/js/navigation.js"></script>
     <script src="/js/assessment.js"></script>
     <link rel="stylesheet" href="/css/style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     
     <!-- Include header styles -->
     <div th:replace="~{fragments/header :: headerStyles}"></div>
     
     <style>
-        .main-content {
-            padding: 20px;
-            color: white;
-            margin-top: 20px;
-            margin-bottom: 100px;
+        .assessment-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 30px 20px;
+            min-height: calc(100vh - 65px);
+        }
+        
+        .page-header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px 0;
         }
         
         .page-title {
-            font-size: 1.8rem;
-            font-weight: bold;
-            margin-bottom: 20px;
-            color: white;
+            font-size: 2.8em;
+            font-weight: 700;
+            color: #ecf0f1;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
         }
         
-        /* Form styles */
-        .assessment-form {
-            background-color: rgba(0, 0, 0, 0.2);
-            border-radius: 8px;
+        .page-subtitle {
+            font-size: 1.2em;
+            color: #bdc3c7;
+            font-weight: 300;
+            opacity: 0.9;
+        }
+        
+        .assessment-section {
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02));
+            backdrop-filter: blur(15px);
             padding: 30px;
-            margin-top: 20px;
-            max-width: 800px;
-            margin-left: auto;
-            margin-right: auto;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .assessment-section:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.4);
         }
         
         .technician-info {
-            background-color: rgba(0, 0, 0, 0.1);
-            border-radius: 8px;
-            padding: 15px 20px;
-            margin-bottom: 20px;
+            background: linear-gradient(145deg, rgba(230, 126, 34, 0.15), rgba(243, 156, 18, 0.1));
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(230, 126, 34, 0.2);
         }
         
         .technician-info h3 {
-            margin-top: 0;
-            margin-bottom: 10px;
+            color: #ecf0f1;
+            font-size: 1.4em;
+            font-weight: 600;
+            margin: 0 0 15px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
         
-        .technician-info p {
-            margin: 5px 0;
+        .technician-avatar-large {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #e67e22, #f39c12);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 1em;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+        }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .info-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #bdc3c7;
+            font-size: 0.95em;
+        }
+        
+        .info-icon {
+            color: #e67e22;
+            width: 16px;
+            text-align: center;
         }
         
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 30px;
         }
         
         .form-group label {
             display: block;
-            font-weight: bold;
-            margin-bottom: 8px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: #ecf0f1;
+            font-size: 1.1em;
+            letter-spacing: 0.3px;
         }
         
-        .form-group input,
-        .form-group textarea,
-        .form-group select {
+        .form-group textarea {
             width: 100%;
-            padding: 10px 15px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 4px;
-            background-color: rgba(0, 0, 0, 0.2);
-            color: white;
+            padding: 15px 20px;
+            border: 2px solid rgba(255, 255, 255, 0.15);
+            border-radius: 12px;
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
+            color: #ecf0f1;
             font-size: 1rem;
-            transition: all 0.3s;
+            font-family: inherit;
+            transition: all 0.3s ease;
+            resize: vertical;
+            min-height: 120px;
         }
         
-        .form-group input:focus,
-        .form-group textarea:focus,
-        .form-group select:focus {
+        .form-group textarea:focus {
             outline: none;
-            border-color: #ff9800;
-            box-shadow: 0 0 0 2px rgba(255, 152, 0, 0.2);
+            border-color: #e67e22;
+            box-shadow: 0 0 0 3px rgba(230, 126, 34, 0.2);
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.04));
+        }
+        
+        .form-group textarea::placeholder {
+            color: rgba(189, 195, 199, 0.7);
         }
         
         .score-selector {
-            display: flex;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
             gap: 15px;
-            flex-wrap: wrap;
-            margin-bottom: 10px;
+            max-width: 700px;
+            margin: 20px 0;
         }
         
         .score-option {
-            display: inline-block;
             position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
         
         .score-option input[type="radio"] {
             position: absolute;
             opacity: 0;
+            pointer-events: none;
         }
         
         .score-option label {
             display: flex;
             align-items: center;
             justify-content: center;
-            width: 50px;
-            height: 50px;
+            width: 55px;
+            height: 55px;
             border-radius: 50%;
-            background-color: rgba(0, 0, 0, 0.3);
-            color: white;
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            color: #ecf0f1;
             cursor: pointer;
-            font-weight: bold;
+            font-weight: 600;
+            font-size: 1.1em;
             transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .score-option label::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, #e67e22, #f39c12);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            border-radius: 50%;
+        }
+        
+        .score-option label span {
+            position: relative;
+            z-index: 1;
         }
         
         .score-option input[type="radio"]:checked + label {
-            background-color: #ff9800;
+            border-color: #e67e22;
             transform: scale(1.1);
+            box-shadow: 0 5px 15px rgba(230, 126, 34, 0.4);
+        }
+        
+        .score-option input[type="radio"]:checked + label::before {
+            opacity: 1;
         }
         
         .score-option:hover label {
-            background-color: rgba(255, 152, 0, 0.7);
+            transform: scale(1.05);
+            border-color: rgba(230, 126, 34, 0.6);
         }
         
-        .score-label {
+        .score-description {
             text-align: center;
-            margin-top: 5px;
-            font-size: 0.8rem;
+            margin-top: 10px;
+            color: #bdc3c7;
+            font-size: 0.85em;
+            opacity: 0.8;
         }
         
         .submit-btn {
-            background-color: #ff9800;
+            background: linear-gradient(135deg, #e67e22, #f39c12);
             color: white;
             border: none;
-            padding: 12px 25px;
-            border-radius: 4px;
-            font-weight: bold;
+            padding: 15px 30px;
+            border-radius: 12px;
+            font-weight: 600;
             cursor: pointer;
             font-size: 1rem;
+            letter-spacing: 0.5px;
             transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(230, 126, 34, 0.3);
+            position: relative;
+            overflow: hidden;
         }
         
         .submit-btn:hover {
-            background-color: #e67e00;
-            transform: translateY(-2px);
+            background: linear-gradient(135deg, #d35400, #e67e22);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(230, 126, 34, 0.4);
+        }
+        
+        .submit-btn:active {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(230, 126, 34, 0.3);
         }
         
         .cancel-btn {
-            background-color: transparent;
+            background: linear-gradient(135deg, #6c757d, #495057);
             color: white;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            padding: 12px 25px;
-            border-radius: 4px;
-            font-weight: bold;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 12px;
+            font-weight: 600;
             cursor: pointer;
             font-size: 1rem;
+            letter-spacing: 0.5px;
             margin-right: 15px;
             transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            box-shadow: 0 4px 15px rgba(108, 117, 125, 0.2);
         }
         
         .cancel-btn:hover {
-            background-color: rgba(255, 255, 255, 0.1);
+            background: linear-gradient(135deg, #5a6268, #3d4142);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(108, 117, 125, 0.3);
         }
         
         .form-actions {
             display: flex;
             justify-content: flex-end;
-            margin-top: 30px;
+            align-items: center;
+            margin-top: 40px;
+            gap: 15px;
         }
         
         /* Light mode styles */
-        body.light-mode {
-            background-color: #f5f5f5;
-            color: #333;
+        body.light-mode .page-title {
+            color: #2c3e50;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
         }
         
-        body.light-mode .page-title,
-        body.light-mode .main-content {
-            color: #333;
+        body.light-mode .page-subtitle {
+            color: #6c757d;
         }
         
-        body.light-mode .assessment-form {
-            background-color: #ffffff;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        body.light-mode .assessment-section {
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.95), rgba(248, 249, 250, 0.9));
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+        }
+        
+        body.light-mode .assessment-section:hover {
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.12);
         }
         
         body.light-mode .technician-info {
-            background-color: #f5f5f5;
+            background: linear-gradient(145deg, rgba(0, 123, 255, 0.15), rgba(40, 167, 69, 0.1));
+            border: 1px solid rgba(0, 123, 255, 0.2);
         }
         
-        body.light-mode .form-group input,
-        body.light-mode .form-group textarea,
-        body.light-mode .form-group select {
-            background-color: #f9f9f9;
-            border: 1px solid #e0e0e0;
-            color: #333;
+        body.light-mode .technician-info h3 {
+            color: #2c3e50;
+        }
+        
+        body.light-mode .technician-avatar-large {
+            background: linear-gradient(135deg, #007bff, #28a745);
+        }
+        
+        body.light-mode .info-item {
+            color: #495057;
+        }
+        
+        body.light-mode .info-icon {
+            color: #007bff;
+        }
+        
+        body.light-mode .form-group label {
+            color: #2c3e50;
+        }
+        
+        body.light-mode .form-group textarea {
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.9), rgba(248, 249, 250, 0.7));
+            border: 2px solid rgba(0, 0, 0, 0.1);
+            color: #2c3e50;
+        }
+        
+        body.light-mode .form-group textarea:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2);
+            background: linear-gradient(145deg, rgba(255, 255, 255, 1), rgba(248, 249, 250, 0.9));
+        }
+        
+        body.light-mode .form-group textarea::placeholder {
+            color: rgba(73, 80, 87, 0.6);
         }
         
         body.light-mode .score-option label {
-            background-color: #e0e0e0;
-            color: #333;
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.9), rgba(248, 249, 250, 0.7));
+            border: 2px solid rgba(0, 0, 0, 0.15);
+            color: #2c3e50;
+        }
+        
+        body.light-mode .score-option label::before {
+            background: linear-gradient(135deg, #007bff, #28a745);
         }
         
         body.light-mode .score-option input[type="radio"]:checked + label {
-            background-color: #ff9800;
-            color: white;
+            border-color: #007bff;
+            box-shadow: 0 5px 15px rgba(0, 123, 255, 0.3);
         }
         
         body.light-mode .score-option:hover label {
-            background-color: rgba(255, 152, 0, 0.7);
-            color: white;
+            border-color: rgba(0, 123, 255, 0.6);
         }
         
-        body.light-mode .cancel-btn {
-            color: #333;
-            border: 1px solid #ccc;
+        body.light-mode .score-description {
+            color: #6c757d;
+        }
+        
+        body.light-mode .submit-btn {
+            background: linear-gradient(135deg, #007bff, #28a745);
+            box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
+        }
+        
+        body.light-mode .submit-btn:hover {
+            background: linear-gradient(135deg, #0056b3, #1e7e34);
+            box-shadow: 0 8px 25px rgba(0, 123, 255, 0.4);
         }
     </style>
 </head>
@@ -225,42 +390,100 @@
     <!-- Include header -->
     <div th:replace="~{fragments/header :: header}"></div>
 
-    <div class="main-content">
-        <h2 class="page-title" th:text="#{engineer.assessment.heading}">Assess Technician</h2>
+    <div class="assessment-container">
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1 class="page-title">
+                <i class="fas fa-clipboard-check"></i>
+                <span th:text="#{engineer.assessment.heading}">Assess Technician</span>
+            </h1>
+            <p class="page-subtitle">Evaluate technician performance and provide valuable feedback</p>
+        </div>
         
-        <div class="assessment-form">
+        <!-- Assessment Section -->
+        <div class="assessment-section">
             <div class="technician-info">
-                <h3 th:text="${technician.firstName + ' ' + technician.lastName}">Technician Name</h3>
-                <p><strong th:text="#{engineer.assessment.email}">Email:</strong> <span th:text="${technician.email}">technician@example.com</span></p>
-                <p><strong th:text="#{engineer.assessment.phone}">Phone:</strong> <span th:text="${technician.phoneNumber}">+1234567890</span></p>
+                <h3>
+                    <div class="technician-avatar-large" th:text="${#strings.substring(technician.firstName, 0, 1) + #strings.substring(technician.lastName, 0, 1)}">JD</div>
+                    <span th:text="${technician.firstName + ' ' + technician.lastName}">Technician Name</span>
+                </h3>
+                
+                <div class="info-grid">
+                    <div class="info-item">
+                        <i class="fas fa-envelope info-icon"></i>
+                        <span th:text="${technician.email}">technician@example.com</span>
+                    </div>
+                    <div class="info-item">
+                        <i class="fas fa-phone info-icon"></i>
+                        <span th:text="${technician.phoneNumber}">+1234567890</span>
+                    </div>
+                    <div class="info-item">
+                        <i class="fas fa-id-badge info-icon"></i>
+                        <span>ID: <span th:text="${technician.id}">123</span></span>
+                    </div>
+                </div>
             </div>
             
             <form id="assessmentForm">
                 <input type="hidden" name="technicianId" th:value="${technician.id}" />
                 
                 <div class="form-group">
-                    <label th:text="#{engineer.assessment.score}">Score (1-10)</label>
+                    <label th:text="#{engineer.assessment.score}">Performance Score (1-10)</label>
                     <div class="score-selector">
                         <div class="score-option" th:each="i : ${#numbers.sequence(1, 10)}">
                             <input type="radio" th:id="'score-' + ${i}" name="score" th:value="${i}" />
-                            <label th:for="'score-' + ${i}" th:text="${i}">1</label>
+                            <label th:for="'score-' + ${i}">
+                                <span th:text="${i}">1</span>
+                            </label>
                         </div>
+                    </div>
+                    <div class="score-description">
+                        Select a score from 1 (Poor) to 10 (Excellent) based on the technician's overall performance
                     </div>
                 </div>
                 
                 <div class="form-group">
-                    <label for="comments" th:text="#{engineer.assessment.comments}">Comments</label>
-                    <textarea id="comments" name="comments" rows="6" th:placeholder="#{engineer.assessment.comments.placeholder}" placeholder="Enter your assessment comments here..." required></textarea>
+                    <label for="comments">
+                        <i class="fas fa-comment-alt" style="margin-right: 8px; color: #e67e22;"></i>
+                        <span th:text="#{engineer.assessment.comments}">Assessment Comments</span>
+                    </label>
+                    <textarea id="comments" 
+                              name="comments" 
+                              th:placeholder="#{engineer.assessment.comments.placeholder}" 
+                              placeholder="Provide detailed feedback about the technician's performance, strengths, and areas for improvement..." 
+                              required></textarea>
                 </div>
                 
                 <div class="form-actions">
-                    <a href="javascript:void(0)" onclick="navigateTo('/engineer/technicians')" class="cancel-btn" th:text="#{engineer.assessment.cancel}">Cancel</a>
-                    <button type="submit" class="submit-btn" th:text="#{engineer.assessment.submit}">Submit Assessment</button>
+                    <a href="javascript:void(0)" 
+                       onclick="navigateTo('/engineer/technicians')" 
+                       class="cancel-btn">
+                        <i class="fas fa-times"></i> <span th:text="#{engineer.assessment.cancel}">Cancel</span>
+                    </a>
+                    <button type="submit" class="submit-btn">
+                        <i class="fas fa-check"></i> <span th:text="#{engineer.assessment.submit}">Submit Assessment</span>
+                    </button>
                 </div>
             </form>
         </div>
     </div>
 
     <script src="/js/theme.js"></script>
+    
+    <!-- Add active navbar highlighting -->
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Highlight current page in navbar
+        const currentPath = window.location.pathname;
+        const navLinks = document.querySelectorAll('.nav-link');
+        
+        navLinks.forEach(link => {
+            const href = link.getAttribute('onclick');
+            if (href && href.includes('/engineer/technicians') && currentPath.includes('/technician')) {
+                link.classList.add('active');
+            }
+        });
+    });
+    </script>
 </body>
 </html> 

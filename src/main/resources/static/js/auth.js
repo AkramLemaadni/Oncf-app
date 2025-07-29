@@ -127,6 +127,52 @@ async function verifyToken() {
     }
 }
 
+// Function to switch language while preserving authentication
+window.switchLanguageAuthenticated = function(lang) {
+    const token = localStorage.getItem('jwtToken');
+    if (!token) {
+        console.error("No JWT token found, redirecting to login");
+        window.location.href = '/login';
+        return;
+    }
+
+    // Get current URL and add language parameter
+    let url = new URL(window.location.href);
+    url.searchParams.set('lang', lang);
+    
+    // Make authenticated request to change language
+    fetch(url.toString(), {
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${token}`,
+            'Accept': 'text/html'
+        }
+    }).then(response => {
+        if (response.ok) {
+            return response.text();
+        } else if (response.status === 401) {
+            // Token expired or invalid
+            localStorage.removeItem('jwtToken');
+            window.location.href = '/login';
+            throw new Error('Authentication failed');
+        } else {
+            throw new Error('Language switch failed');
+        }
+    }).then(html => {
+        // Replace current page content with new content
+        document.open();
+        document.write(html);
+        document.close();
+        
+        // Update URL without page reload
+        window.history.pushState({}, '', url.toString());
+    }).catch(error => {
+        console.error('Error switching language:', error);
+        // Fallback: reload page with new language parameter
+        window.location.href = url.toString();
+    });
+};
+
 // Global logout function
 window.handleLogout = async function() {
     try {

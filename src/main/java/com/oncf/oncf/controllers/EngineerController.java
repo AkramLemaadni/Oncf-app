@@ -4,16 +4,17 @@ import com.oncf.oncf.entities.User;
 import com.oncf.oncf.entities.Assessment;
 import com.oncf.oncf.services.UserService;
 import com.oncf.oncf.services.AssessmentService;
+import com.oncf.oncf.services.StatisticsService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -27,6 +28,9 @@ public class EngineerController {
     
     @Autowired
     private AssessmentService assessmentService;
+    
+    @Autowired
+    private StatisticsService statisticsService;
     
     @GetMapping("/technicians")
     public String listTechnicians(Model model) {
@@ -92,5 +96,110 @@ public class EngineerController {
         model.addAttribute("fullName", engineer.getFirstName() + " " + engineer.getLastName());
         
         return "engineer_interns";
+    }
+    
+    // === STATISTICS API ENDPOINTS ===
+    
+    @PostMapping("/api/upload-xlsx")
+    @ResponseBody
+    public ResponseEntity<?> uploadXlsxFile(@RequestParam("file") MultipartFile file) {
+        try {
+            // Get the authenticated engineer
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            User engineer = userService.getUserByEmail(auth.getName())
+                .orElseThrow(() -> new RuntimeException("Engineer not found"));
+            
+            // Validate file
+            if (file.isEmpty()) {
+                return ResponseEntity.badRequest().body("Please select a file to upload");
+            }
+            
+            if (!file.getOriginalFilename().toLowerCase().endsWith(".xlsx")) {
+                return ResponseEntity.badRequest().body("Only .xlsx files are supported");
+            }
+            
+            // Process the file
+            String sessionId = statisticsService.processXlsxFile(file, engineer.getEmail());
+            
+            return ResponseEntity.ok().body(java.util.Map.of(
+                "success", true,
+                "message", "File uploaded successfully",
+                "sessionId", sessionId
+            ));
+            
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(java.util.Map.of(
+                "success", false,
+                "message", "Error uploading file: " + e.getMessage()
+            ));
+        }
+    }
+    
+    @GetMapping("/api/files")
+    @ResponseBody
+    public ResponseEntity<?> getUserFiles() {
+        try {
+            // Get the authenticated engineer
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            User engineer = userService.getUserByEmail(auth.getName())
+                .orElseThrow(() -> new RuntimeException("Engineer not found"));
+            
+            List<java.util.Map<String, Object>> files = statisticsService.getUserFiles(engineer.getEmail());
+            
+            return ResponseEntity.ok(files);
+            
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error retrieving files: " + e.getMessage());
+        }
+    }
+    
+    @GetMapping("/api/file/{fileId}")
+    @ResponseBody
+    public ResponseEntity<?> getFileData(@PathVariable String fileId) {
+        try {
+            java.util.Map<String, Object> fileData = statisticsService.getFileData(fileId);
+            
+            if (fileData == null) {
+                return ResponseEntity.notFound().build();
+            }
+            
+            return ResponseEntity.ok(fileData);
+            
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error retrieving file data: " + e.getMessage());
+        }
+    }
+    
+    @GetMapping("/api/file/{fileId}/incidents")
+    @ResponseBody
+    public ResponseEntity<?> getIncidentAnalysis(@PathVariable String fileId) {
+        try {
+            java.util.Map<String, Object> incidentData = statisticsService.getIncidentAnalysis(fileId);
+            
+            if (incidentData == null) {
+                return ResponseEntity.notFound().build();
+            }
+            
+            return ResponseEntity.ok(incidentData);
+            
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error analyzing incidents: " + e.getMessage());
+        }
+    }
+    
+    @DeleteMapping("/api/file/{fileId}")
+    @ResponseBody
+    public ResponseEntity<?> deleteFile(@PathVariable String fileId) {
+        try {
+            statisticsService.deleteFile(fileId);
+            
+            return ResponseEntity.ok().body(java.util.Map.of(
+                "success", true,
+                "message", "Session deleted successfully"
+            ));
+            
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error deleting session: " + e.getMessage());
+        }
     }
 } 

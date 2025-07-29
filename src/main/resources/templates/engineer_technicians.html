@@ -5,128 +5,293 @@
     <title th:text="#{engineer.technicians.title}">ONCF - Engineer's Technicians</title>
     <script src="/js/auth.js"></script>
     <script src="/js/navigation.js"></script>
+    <script src="/js/theme.js"></script>
     <link rel="stylesheet" href="/css/style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     
     <!-- Include header styles -->
     <div th:replace="~{fragments/header :: headerStyles}"></div>
+    <!-- Include footer styles -->
+    <div th:replace="~{fragments/footer :: footerStyles}"></div>
     
     <style>
-        .main-content {
-            padding: 20px;
-            color: white;
-            margin-top: 20px;
-            margin-bottom: 100px;
+        .technicians-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 30px 20px;
+            min-height: calc(100vh - 65px);
         }
         
-        /* Table styles */
-        .technician-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-            background-color: rgba(0, 0, 0, 0.2);
-            border-radius: 8px;
+        .page-header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px 0;
+        }
+        
+        .page-title {
+            font-size: 2.8em;
+            font-weight: 700;
+            color: #ecf0f1;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        .page-subtitle {
+            font-size: 1.2em;
+            color: #bdc3c7;
+            font-weight: 300;
+            opacity: 0.9;
+        }
+        
+        .technicians-section {
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02));
+            backdrop-filter: blur(15px);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .technicians-section:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.4);
+        }
+        
+        .technicians-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+        
+        .technician-card {
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.06));
+            backdrop-filter: blur(10px);
+            padding: 25px;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+            position: relative;
             overflow: hidden;
         }
         
-        .technician-table th, 
-        .technician-table td {
-            padding: 15px;
-            text-align: left;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        .technician-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(135deg, #e67e22, #f39c12);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
         }
         
-        .technician-table th {
-            background-color: rgba(0, 0, 0, 0.3);
-            font-weight: bold;
+        .technician-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+            border-color: rgba(230, 126, 34, 0.3);
         }
         
-        .technician-table tr:hover {
-            background-color: rgba(255, 255, 255, 0.05);
+        .technician-card:hover::before {
+            transform: scaleX(1);
         }
         
-        .technician-table tr:last-child td {
-            border-bottom: none;
+        .technician-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .technician-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #e67e22, #f39c12);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 1.2em;
+            margin-right: 15px;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+        }
+        
+        .technician-info {
+            flex-grow: 1;
+        }
+        
+        .technician-name {
+            font-size: 1.3em;
+            font-weight: 600;
+            color: #ecf0f1;
+            margin-bottom: 5px;
+            letter-spacing: 0.3px;
+        }
+        
+        .technician-id {
+            font-size: 0.9em;
+            color: #bdc3c7;
+            opacity: 0.8;
+        }
+        
+        .technician-details {
+            margin-bottom: 20px;
+        }
+        
+        .detail-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+            font-size: 0.95em;
+        }
+        
+        .detail-icon {
+            width: 20px;
+            margin-right: 12px;
+            color: #e67e22;
+            text-align: center;
+        }
+        
+        .detail-text {
+            color: #bdc3c7;
+            flex-grow: 1;
+        }
+        
+        .technician-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
         }
         
         .btn {
-            display: inline-block;
-            padding: 8px 15px;
-            border-radius: 4px;
-            font-weight: bold;
+            flex: 1;
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
             text-decoration: none;
             border: none;
-        }
-        
-        .btn-assess {
-            background-color: #4CAF50;
-            color: white;
-        }
-        
-        .btn-assess:hover {
-            background-color: #45a049;
-            transform: translateY(-2px);
+            font-size: 0.9em;
+            letter-spacing: 0.3px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         }
         
         .btn-view {
-            background-color: #2196F3;
+            background: linear-gradient(135deg, #007bff, #0056b3);
             color: white;
         }
         
         .btn-view:hover {
-            background-color: #0b7dda;
+            background: linear-gradient(135deg, #0056b3, #004494);
             transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 123, 255, 0.3);
         }
         
-        .page-title {
-            font-size: 1.8rem;
-            font-weight: bold;
-            margin-bottom: 20px;
+        .btn-assess {
+            background: linear-gradient(135deg, #28a745, #1e7e34);
             color: white;
+        }
+        
+        .btn-assess:hover {
+            background: linear-gradient(135deg, #1e7e34, #155724);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(40, 167, 69, 0.3);
         }
         
         .empty-state {
             text-align: center;
-            padding: 40px;
-            color: #888;
-            font-style: italic;
+            padding: 60px 40px;
+            color: #7f8c8d;
+            font-size: 1.1em;
+        }
+        
+        .empty-state i {
+            font-size: 4em;
+            margin-bottom: 20px;
+            opacity: 0.5;
+            color: #bdc3c7;
+        }
+        
+        .empty-state h3 {
+            margin-bottom: 15px;
+            color: #95a5a6;
+            font-weight: 400;
         }
         
         /* Light mode styles */
-        body.light-mode {
-            background-color: #f5f5f5;
-            color: #333;
+        body.light-mode .page-title {
+            color: #2c3e50;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
         }
         
-        body.light-mode .page-title,
-        body.light-mode .main-content {
-            color: #333;
+        body.light-mode .page-subtitle {
+            color: #6c757d;
         }
         
-        body.light-mode .technician-table {
-            background-color: #ffffff;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        body.light-mode .technicians-section {
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.95), rgba(248, 249, 250, 0.9));
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
         }
         
-        body.light-mode .technician-table th {
-            background-color: #f2f2f2;
-            color: #333;
+        body.light-mode .technicians-section:hover {
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.12);
         }
         
-        body.light-mode .technician-table td,
-        body.light-mode .technician-table th {
-            border-bottom: 1px solid #e0e0e0;
+        body.light-mode .technician-card {
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.9), rgba(248, 249, 250, 0.7));
+            border: 1px solid rgba(0, 0, 0, 0.1);
         }
         
-        body.light-mode .technician-table tr:hover {
-            background-color: #f9f9f9;
+        body.light-mode .technician-card:hover {
+            border-color: rgba(0, 123, 255, 0.3);
+        }
+        
+        body.light-mode .technician-card::before {
+            background: linear-gradient(135deg, #007bff, #28a745);
+        }
+        
+        body.light-mode .technician-avatar {
+            background: linear-gradient(135deg, #007bff, #28a745);
+        }
+        
+        body.light-mode .technician-name {
+            color: #2c3e50;
+        }
+        
+        body.light-mode .technician-id {
+            color: #6c757d;
+        }
+        
+        body.light-mode .detail-text {
+            color: #495057;
+        }
+        
+        body.light-mode .detail-icon {
+            color: #007bff;
         }
         
         body.light-mode .empty-state {
-            color: #666;
+            color: #6c757d;
+        }
+        
+        body.light-mode .empty-state i {
+            color: #dee2e6;
+        }
+        
+        body.light-mode .empty-state h3 {
+            color: #495057;
         }
     </style>
 </head>
@@ -134,38 +299,80 @@
     <!-- Include header -->
     <div th:replace="~{fragments/header :: header}"></div>
 
-    <div class="main-content">
-        <h2 class="page-title" th:text="#{engineer.technicians.heading}">My Technicians</h2>
-        
-        <div th:if="${technicians.empty}" class="empty-state">
-            <p th:text="#{engineer.technicians.empty}">You don't have any technicians under your supervision yet.</p>
+    <div class="technicians-container">
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1 class="page-title">
+                <i class="fas fa-users"></i>
+                <span th:text="#{engineer.technicians.heading}">My Technicians</span>
+            </h1>
         </div>
         
-        <table class="technician-table" th:unless="${technicians.empty}">
-            <thead>
-                <tr>
-                    <th th:text="#{engineer.technicians.id}">ID</th>
-                    <th th:text="#{engineer.technicians.name}">Name</th>
-                    <th th:text="#{engineer.technicians.email}">Email</th>
-                    <th th:text="#{engineer.technicians.phone}">Phone Number</th>
-                    <th th:text="#{engineer.technicians.actions}">Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr th:each="tech : ${technicians}">
-                    <td th:text="${tech.id}">1</td>
-                    <td th:text="${tech.firstName + ' ' + tech.lastName}">John Doe</td>
-                    <td th:text="${tech.email}">john.doe@example.com</td>
-                    <td th:text="${tech.phoneNumber}">+123456789</td>
-                    <td>
-                        <a href="javascript:void(0)" th:onclick="'navigateTo(\'/engineer/technician/' + ${tech.id} + '\')'" class="btn btn-view" th:text="#{engineer.technicians.view}">View</a>
-                        <a href="javascript:void(0)" th:onclick="'navigateTo(\'/engineer/assess-technician/' + ${tech.id} + '\')'" class="btn btn-assess" th:text="#{engineer.technicians.assess}">Assess</a>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+        <!-- Technicians Section -->
+        <div class="technicians-section">
+            <!-- Empty State -->
+            <div th:if="${technicians.empty}" class="empty-state">
+                <i class="fas fa-user-friends"></i>
+                <h3>No Technicians Yet</h3>
+                <p th:text="#{engineer.technicians.empty}">You don't have any technicians under your supervision yet.</p>
+            </div>
+            
+            <!-- Technicians Grid -->
+            <div class="technicians-grid" th:unless="${technicians.empty}">
+                <div class="technician-card" th:each="tech : ${technicians}">
+                    <div class="technician-header">
+                        <div class="technician-avatar" th:text="${#strings.substring(tech.firstName, 0, 1) + #strings.substring(tech.lastName, 0, 1)}">JD</div>
+                        <div class="technician-info">
+                            <div class="technician-name" th:text="${tech.firstName + ' ' + tech.lastName}">John Doe</div>
+                            <div class="technician-id">ID: <span th:text="${tech.id}">1</span></div>
+                        </div>
+                    </div>
+                    
+                    <div class="technician-details">
+                        <div class="detail-item">
+                            <i class="fas fa-envelope detail-icon"></i>
+                            <span class="detail-text" th:text="${tech.email}">john.doe@example.com</span>
+                        </div>
+                        <div class="detail-item">
+                            <i class="fas fa-phone detail-icon"></i>
+                            <span class="detail-text" th:text="${tech.phoneNumber}">+123456789</span>
+                        </div>
+                    </div>
+                    
+                    <div class="technician-actions">
+                        <a href="javascript:void(0)" 
+                           th:onclick="'navigateTo(\'/engineer/technician/' + ${tech.id} + '\')'" 
+                           class="btn btn-view">
+                            <i class="fas fa-eye"></i> <span th:text="#{engineer.technicians.view}">View</span>
+                        </a>
+                        <a href="javascript:void(0)" 
+                           th:onclick="'navigateTo(\'/engineer/assess-technician/' + ${tech.id} + '\')'" 
+                           class="btn btn-assess">
+                            <i class="fas fa-clipboard-check"></i> <span th:text="#{engineer.technicians.assess}">Assess</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <script src="/js/theme.js"></script>
+    <!-- Include footer -->
+    <div th:replace="~{fragments/footer :: footer}"></div>
+    
+    <!-- Add active navbar highlighting -->
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Highlight current page in navbar
+        const currentPath = window.location.pathname;
+        const navLinks = document.querySelectorAll('.nav-link');
+        
+        navLinks.forEach(link => {
+            const href = link.getAttribute('onclick');
+            if (href && href.includes('/engineer/technicians') && currentPath.includes('/technicians')) {
+                link.classList.add('active');
+            }
+        });
+    });
+    </script>
 </body>
 </html> 

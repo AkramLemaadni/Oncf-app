@@ -46,9 +46,12 @@ public class SecurityConfig {
                 .requestMatchers("/", "/login", "/register", "/test-login", "/api-test").permitAll()
                 .requestMatchers("/api/auth/login", "/api/auth/register", "/api/auth/test", "/api/auth/verify").permitAll()
                 
+                // Allow language change requests
+                .requestMatchers(HttpMethod.POST, "/**").hasAnyRole("ENGINEER", "TECHNICIAN")
+                .requestMatchers(HttpMethod.GET, "/**").hasAnyRole("ENGINEER", "TECHNICIAN")
+                
                 // Engineer specific paths - require ENGINEER role
-                .requestMatchers(HttpMethod.GET, "/engineer/**").hasRole("ENGINEER")
-                .requestMatchers(HttpMethod.POST, "/engineer/**").hasRole("ENGINEER")
+                .requestMatchers("/engineer/**").hasRole("ENGINEER")
                 .requestMatchers("/api/engineers/**").hasRole("ENGINEER")
                 
                 // Technician specific paths - require TECHNICIAN role

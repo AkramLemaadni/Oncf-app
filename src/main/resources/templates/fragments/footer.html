@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+</head>
+<body>
+    <!-- Footer fragment that can be included in other pages -->
+    <div th:fragment="footer">
+        <footer class="main-footer">
+            <div class="footer-content">
+                <div class="language-switcher">
+                    <a href="javascript:void(0)" onclick="switchLanguageAuthenticated('en')" th:class="${#locale.language == 'en'} ? 'active' : ''">EN</a>
+                    <span class="separator">|</span>
+                    <a href="javascript:void(0)" onclick="switchLanguageAuthenticated('fr')" th:class="${#locale.language == 'fr'} ? 'active' : ''">FR</a>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Footer styles fragment that can be included in the head section -->
+    <div th:fragment="footerStyles">
+        <style>
+            .main-footer {
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                background-color: #1a2634;
+                padding: 20px 0;
+                box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.2);
+                z-index: 1000;
+                min-height: 60px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            .footer-content {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                width: 100%;
+                max-width: 1200px;
+                margin: 0 auto;
+                padding: 0 20px;
+            }
+            .language-switcher {
+                display: flex;
+                align-items: center;
+                background-color: rgba(255, 255, 255, 0.1);
+                border-radius: 25px;
+                padding: 10px 20px;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            }
+            .language-switcher a {
+                color: white;
+                text-decoration: none;
+                padding: 5px 10px;
+                font-weight: bold;
+                font-size: 0.95rem;
+                transition: all 0.3s ease;
+                border-radius: 15px;
+                cursor: pointer;
+            }
+            .language-switcher .separator {
+                color: rgba(255, 255, 255, 0.5);
+                margin: 0 5px;
+            }
+            .language-switcher a.active {
+                color: #ff9800;
+                background-color: rgba(255, 255, 255, 0.05);
+                pointer-events: none;
+            }
+            .language-switcher a:hover:not(.active) {
+                background-color: rgba(255, 255, 255, 0.1);
+                transform: translateY(-1px);
+            }
+            body.light-mode .main-footer {
+                background-color: #ffffff;
+                border-top: 1px solid #e0e0e0;
+            }
+            body.light-mode .language-switcher {
+                background-color: #f0f0f0;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            }
+            body.light-mode .language-switcher a {
+                color: #333;
+            }
+            body.light-mode .language-switcher .separator {
+                color: rgba(0, 0, 0, 0.3);
+            }
+            body.light-mode .language-switcher a.active {
+                color: #ff5722;
+                background-color: rgba(0, 0, 0, 0.05);
+            }
+            body.light-mode .language-switcher a:hover:not(.active) {
+                background-color: rgba(0, 0, 0, 0.1);
+            }
+            body {
+                padding-bottom: 100px;
+            }
+            @media (max-width: 768px) {
+                .main-footer {
+                    padding: 15px 0;
+                }
+                .language-switcher {
+                    padding: 8px 15px;
+                }
+                .language-switcher a {
+                    padding: 4px 8px;
+                }
+                body {
+                    padding-bottom: 80px;
+                }
+            }
+        </style>
+    </div>
+</body>
+</html> 

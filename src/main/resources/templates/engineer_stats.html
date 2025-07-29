@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="#{engineer.stats.title}">ONCF - Statistics Dashboard</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <!-- Include header styles -->
+    <div th:insert="fragments/header :: headerStyles"></div>
+    
+    <!-- Include footer styles -->
+    <div th:insert="fragments/footer :: footerStyles"></div>
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <style>
+        .stats-container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 30px 20px 80px 20px;
+            min-height: calc(100vh - 65px);
+        }
+        
+        .page-header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px 0;
+        }
+        
+        .page-title {
+            font-size: 2.8em;
+            font-weight: 700;
+            color: #ecf0f1;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            letter-spacing: 1px;
+        }
+        
+        .page-subtitle {
+            font-size: 1.2em;
+            color: #bdc3c7;
+            font-weight: 300;
+            opacity: 0.9;
+        }
+        
+        .stats-section {
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02));
+            backdrop-filter: blur(15px);
+            margin-bottom: 35px;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            overflow: hidden;
+        }
+        
+        .stats-section:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.4);
+        }
+        
+        .stats-section h2 {
+            color: #ecf0f1;
+            margin-bottom: 25px;
+            font-size: 1.6em;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid rgba(230, 126, 34, 0.3);
+            padding-bottom: 15px;
+        }
+        
+        .stats-section h2 i {
+            font-size: 1.2em;
+            color: #e67e22;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+        }
+        
+        .upload-area {
+            border: 3px dashed #e67e22;
+            border-radius: 15px;
+            padding: 50px 40px;
+            text-align: center;
+            transition: all 0.4s ease;
+            cursor: pointer;
+            background: linear-gradient(145deg, rgba(230, 126, 34, 0.03), rgba(243, 156, 18, 0.01));
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .upload-area::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(230, 126, 34, 0.05), transparent);
+            transform: rotate(-45deg);
+            transition: transform 0.4s ease;
+            z-index: 0;
+        }
+        
+        .upload-area:hover::before {
+            transform: rotate(-45deg) translate(50px, 50px);
+        }
+        
+        .upload-area > * {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .upload-area:hover {
+            border-color: #f39c12;
+            background: linear-gradient(145deg, rgba(230, 126, 34, 0.08), rgba(243, 156, 18, 0.05));
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(230, 126, 34, 0.2);
+        }
+        
+        .upload-area.dragover {
+            border-color: #f39c12;
+            background: linear-gradient(145deg, rgba(230, 126, 34, 0.15), rgba(243, 156, 18, 0.1));
+            transform: scale(1.02);
+            box-shadow: 0 15px 40px rgba(230, 126, 34, 0.3);
+        }
+        
+        .upload-area i {
+            font-size: 3em;
+            color: #e67e22;
+            margin-bottom: 15px;
+        }
+        
+        .upload-text {
+            color: #bdc3c7;
+            font-size: 1.1em;
+            margin-bottom: 15px;
+        }
+        
+        .file-input {
+            display: none;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #e67e22, #f39c12);
+            color: white;
+            padding: 14px 28px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 0.95em;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+            margin: 6px;
+            box-shadow: 0 4px 15px rgba(230, 126, 34, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #d35400, #e67e22);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(230, 126, 34, 0.4);
+        }
+        
+        .btn-primary:active {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(230, 126, 34, 0.3);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(135deg, #6c757d, #495057);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.85em;
+            font-weight: 500;
+            letter-spacing: 0.3px;
+            transition: all 0.3s ease;
+            margin: 4px;
+            box-shadow: 0 3px 10px rgba(108, 117, 125, 0.2);
+        }
+        
+        .btn-secondary:hover {
+            background: linear-gradient(135deg, #5a6268, #3d4142);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(108, 117, 125, 0.3);
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, #dc3545, #c82333);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.85em;
+            font-weight: 500;
+            letter-spacing: 0.3px;
+            transition: all 0.3s ease;
+            margin: 4px;
+            box-shadow: 0 3px 10px rgba(220, 53, 69, 0.2);
+        }
+        
+        .btn-danger:hover {
+            background: linear-gradient(135deg, #c82333, #bd2130);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(220, 53, 69, 0.3);
+        }
+        
+        .datasets-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        @media (min-width: 768px) {
+            .datasets-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (min-width: 1200px) {
+            .datasets-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+        
+        .dataset-card {
+            background-color: rgba(255, 255, 255, 0.08);
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .dataset-card:hover {
+            background-color: rgba(255, 255, 255, 0.12);
+            transform: translateY(-2px);
+        }
+        
+        .dataset-title {
+            color: #ecf0f1;
+            font-weight: 600;
+            margin-bottom: 10px;
+            word-break: break-word;
+        }
+        
+        .dataset-info {
+            color: #bdc3c7;
+            font-size: 0.9em;
+            margin-bottom: 15px;
+        }
+        
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background-color: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .data-table th {
+            background-color: rgba(230, 126, 34, 0.8);
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+        }
+        
+        .data-table td {
+            padding: 10px 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            color: #ecf0f1;
+        }
+        
+        .data-table tr:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+        
+        .chart-controls {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        
+        .form-group label {
+            color: #bdc3c7;
+            font-size: 0.9em;
+            font-weight: 500;
+        }
+        
+        .form-group select {
+            padding: 8px 12px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 6px;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: #ecf0f1;
+            font-size: 0.9em;
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 600px;
+            width: 100%;
+            margin-top: 20px;
+            padding: 15px;
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 10px;
+            overflow: hidden;
+            box-sizing: border-box;
+        }
+        
+        .chart-container canvas {
+            width: 100% !important;
+            height: 100% !important;
+            max-width: calc(100% - 10px) !important;
+            max-height: calc(100% - 10px) !important;
+        }
+        
+        .incident-summary {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .summary-card {
+            background: linear-gradient(145deg, rgba(230, 126, 34, 0.15), rgba(243, 156, 18, 0.10));
+            border: 1px solid rgba(230, 126, 34, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            flex: 1;
+            min-width: 150px;
+            backdrop-filter: blur(10px);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .summary-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(230, 126, 34, 0.3);
+        }
+        
+        .summary-number {
+            font-size: 2.5em;
+            font-weight: 700;
+            color: #e67e22;
+            margin-bottom: 8px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        .summary-label {
+            font-size: 0.9em;
+            color: #bdc3c7;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #bdc3c7;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #7f8c8d;
+        }
+        
+        .empty-state i {
+            font-size: 4em;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(to right, #e67e22, #f39c12);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        
+        /* Light mode styles */
+        body.light-mode .page-title {
+            color: #2c3e50;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+        
+        body.light-mode .page-subtitle {
+            color: #6c757d;
+        }
+        
+        body.light-mode .stats-section {
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.95), rgba(248, 249, 250, 0.9));
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+        }
+        
+        body.light-mode .stats-section:hover {
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.12);
+        }
+        
+        body.light-mode .stats-section h2 {
+            color: #2c3e50;
+            border-bottom: 2px solid rgba(0, 123, 255, 0.3);
+        }
+        
+        body.light-mode .stats-section h2 i {
+            color: #007bff;
+        }
+        
+        body.light-mode .upload-area {
+            border-color: #007bff;
+            background: linear-gradient(145deg, rgba(0, 123, 255, 0.03), rgba(40, 167, 69, 0.01));
+        }
+        
+        body.light-mode .upload-area::before {
+            background: linear-gradient(45deg, transparent, rgba(0, 123, 255, 0.05), transparent);
+        }
+        
+        body.light-mode .upload-area:hover {
+            border-color: #0056b3;
+            background: linear-gradient(145deg, rgba(0, 123, 255, 0.08), rgba(40, 167, 69, 0.05));
+            box-shadow: 0 10px 30px rgba(0, 123, 255, 0.2);
+        }
+        
+        body.light-mode .upload-area.dragover {
+            background: linear-gradient(145deg, rgba(0, 123, 255, 0.15), rgba(40, 167, 69, 0.1));
+            box-shadow: 0 15px 40px rgba(0, 123, 255, 0.3);
+        }
+        
+        body.light-mode .upload-area i {
+            color: #007bff;
+        }
+        
+        body.light-mode .upload-text {
+            color: #666;
+        }
+        
+        body.light-mode .btn-primary {
+            background: linear-gradient(135deg, #007bff, #28a745);
+            box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
+        }
+        
+        body.light-mode .btn-primary:hover {
+            background: linear-gradient(135deg, #0056b3, #1e7e34);
+            box-shadow: 0 8px 25px rgba(0, 123, 255, 0.4);
+        }
+        
+        body.light-mode .btn-secondary {
+            background: linear-gradient(135deg, #6c757d, #495057);
+        }
+        
+        body.light-mode .btn-secondary:hover {
+            background: linear-gradient(135deg, #5a6268, #3d4142);
+        }
+        
+        body.light-mode .dataset-card {
+            background-color: rgba(0, 0, 0, 0.03);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+        
+        body.light-mode .dataset-title {
+            color: #2c3e50;
+        }
+        
+        body.light-mode .dataset-info {
+            color: #666;
+        }
+        
+        body.light-mode .data-table {
+            background-color: rgba(0, 0, 0, 0.02);
+        }
+        
+        body.light-mode .data-table th {
+            background-color: #007bff;
+        }
+        
+        body.light-mode .data-table td {
+            color: #333;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+        
+        body.light-mode .form-group label {
+            color: #555;
+        }
+        
+        body.light-mode .form-group select {
+            background-color: #f8f9fa;
+            border: 1px solid #ddd;
+            color: #333;
+        }
+        
+        body.light-mode .summary-card {
+            background: linear-gradient(145deg, rgba(0, 123, 255, 0.12), rgba(40, 167, 69, 0.08));
+            border: 1px solid rgba(0, 123, 255, 0.25);
+        }
+        
+        body.light-mode .summary-card:hover {
+            box-shadow: 0 8px 25px rgba(0, 123, 255, 0.2);
+        }
+        
+        body.light-mode .summary-number {
+            color: #007bff;
+        }
+        
+        body.light-mode .summary-label {
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <!-- Include header -->
+    <div th:insert="fragments/header :: header"></div>
+    
+    <div class="stats-container">
+        <!-- Page Header -->
+        <div class="page-header">
+                         <h1 class="page-title">
+                 <i class="fas fa-chart-line"></i>
+                 <span th:text="#{engineer.stats.heading}">Statistics Dashboard</span>
+             </h1>
+             <p class="page-subtitle" th:text="#{engineer.stats.subtitle}">Upload, analyze, and visualize your train data with powerful tools</p>
+        </div>
+        <!-- File Upload Section -->
+        <div class="stats-section">
+                         <h2>
+                 <i class="fas fa-upload"></i>
+                 <span th:text="#{engineer.stats.upload.title}">Upload Excel File</span>
+             </h2>
+            <div class="upload-area" id="uploadArea">
+                <i class="fas fa-cloud-upload-alt"></i>
+                                 <div class="upload-text" th:text="#{engineer.stats.upload.text}">
+                     Drag and drop your Excel file here, or click to browse
+                 </div>
+                 <div class="upload-text" style="font-size: 0.9em; opacity: 0.8;" th:text="#{engineer.stats.upload.format}">
+                     Supported format: .xlsx files only
+                 </div>
+                                 <input type="file" id="fileInput" class="file-input" accept=".xlsx">
+                                 <button type="button" class="btn-primary" onclick="document.getElementById('fileInput').click()" th:text="#{engineer.stats.upload.browse}">
+                     Browse Files
+                 </button>
+            </div>
+            <div id="uploadProgress" class="progress-bar" style="display: none;">
+                <div class="progress-fill"></div>
+            </div>
+        </div>
+        
+        <!-- Uploaded Datasets Section -->
+        <div class="stats-section">
+                         <h2>
+                 <i class="fas fa-database"></i>
+                 <span th:text="#{engineer.stats.datasets.title}">Your Datasets</span>
+                 <button type="button" class="btn-secondary" onclick="loadDatasets()" style="margin-left: auto;">
+                     <i class="fas fa-sync-alt"></i> <span th:text="#{engineer.stats.datasets.refresh}">Refresh</span>
+                 </button>
+             </h2>
+                         <div id="datasetsContainer">
+                 <div class="loading" th:text="#{engineer.stats.datasets.loading}">Loading datasets...</div>
+             </div>
+        </div>
+        
+        <!-- Data View Section -->
+        <div class="stats-section" id="dataViewSection" style="display: none;">
+                         <h2>
+                 <i class="fas fa-table"></i>
+                 <span th:text="#{engineer.stats.dataview.title}">Data View</span>
+                 <button type="button" class="btn-secondary" onclick="closeDataView()" style="margin-left: auto;">
+                     <i class="fas fa-times"></i> <span th:text="#{engineer.stats.dataview.close}">Close</span>
+                 </button>
+             </h2>
+            <div id="dataViewContainer"></div>
+        </div>
+        
+        <!-- Incident Analysis Section -->
+        <div class="stats-section" id="incidentSection" style="display: none;">
+                         <h2>
+                 <i class="fas fa-exclamation-triangle"></i>
+                 <span th:text="#{engineer.stats.incidents.title}">Train Incident Analysis</span>
+                 <button type="button" class="btn-secondary" onclick="closeIncidentView()" style="margin-left: auto;">
+                     <i class="fas fa-times"></i> <span th:text="#{engineer.stats.incidents.close}">Close</span>
+                 </button>
+             </h2>
+            <div id="incidentSummary" style="margin-bottom: 20px;"></div>
+            <div class="chart-container">
+                <canvas id="incidentChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Include existing scripts -->
+    <script src="/js/theme.js"></script>
+    
+    <!-- Authentication and navigation script -->
+    <script src="/js/auth.js"></script>
+    
+    <!-- Add active navbar highlighting -->
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Highlight current page in navbar
+        const currentPath = window.location.pathname;
+        const navLinks = document.querySelectorAll('.nav-link');
+        
+        navLinks.forEach(link => {
+            const href = link.getAttribute('onclick');
+            if (href && href.includes('/engineer/stats') && currentPath.includes('/stats')) {
+                link.classList.add('active');
+            }
+        });
+    });
+    </script>
+    
+    <!-- Statistics functionality script -->
+    <script src="/js/statistics.js"></script>
+    
+    <!-- Footer -->
+    <div th:insert="fragments/footer :: footer"></div>
+</body>
+</html> 

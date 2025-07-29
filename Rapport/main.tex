@@ -1,0 +1,100 @@
+\documentclass[12pt,a4paper]{report}
+\usepackage[utf8]{inputenc}
+\usepackage[french]{babel}
+\usepackage[T1]{fontenc}
+\usepackage{times} % Police Times New Roman
+\usepackage[left=2.5cm,right=2cm,top=2cm,bottom=2cm]{geometry} % Marges avec reliure
+\usepackage{setspace}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{hyperref}
+\usepackage{tocloft}
+\usepackage{titlesec}
+
+% Configuration de l'interligne 1.5
+\onehalfspacing
+
+% Configuration des en-têtes et pieds de page
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[R]{\thepage}
+\renewcommand{\headrulewidth}{0pt}
+
+% Configuration des titres de chapitres
+\titleformat{\chapter}[display]
+{\normalfont\fontsize{16}{19}\bfseries}{\chaptertitlename\ \thechapter}{20pt}{\fontsize{16}{19}\bfseries}
+\titlespacing*{\chapter}{0pt}{50pt}{40pt}
+
+% Configuration des sections
+\titleformat{\section}
+{\normalfont\fontsize{14}{17}\bfseries}{\thesection}{1em}{}
+\titleformat{\subsection}
+{\normalfont\fontsize{12}{15}\bfseries}{\thesubsection}{1em}{}
+
+% Configuration du sommaire
+\renewcommand{\cfttoctitlefont}{\hfill\Large\bfseries}
+\renewcommand{\cftaftertoctitle}{\hfill}
+
+\begin{document}
+
+% Page de garde
+\input{page_garde}
+
+% Pages préliminaires
+\frontmatter
+\pagenumbering{roman}
+
+% Dédicaces
+\input{dedicaces}
+
+% Remerciements
+\input{remerciements}
+
+% Liste des acronymes et abréviations
+\input{acronymes}
+
+% Résumé
+\input{resume}
+
+% Sommaire (Table des matières)
+\tableofcontents
+\newpage
+
+% Liste des figures
+\listoffigures
+\newpage
+
+% Liste des tableaux
+\listoftables
+\newpage
+
+% Corps du rapport
+\mainmatter
+\pagenumbering{arabic}
+
+% Introduction générale
+\input{introduction_generale}
+
+% Chapitre 1 : Présentation de l'entreprise ONCF
+\input{chapitre1}
+
+% Chapitre 2 : Étude bibliographique (à compléter selon le projet)
+% \input{chapitre2}
+
+% Chapitre 3 : Travail réalisé (à compléter selon le projet)
+% \input{chapitre3}
+
+% Conclusion générale
+\input{conclusion_generale}
+
+% Références bibliographiques
+\input{bibliographie}
+
+% Annexes
+\appendix
+\input{annexes}
+
+\end{document}

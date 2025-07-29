@@ -1,0 +1,99 @@
+\chapter{Annexes}
+
+\section{Code source principal}
+
+Cette annexe présente les extraits de code source les plus significatifs du projet.
+
+\subsection{Configuration Spring Security}
+
+\begin{verbatim}
+@Configuration
+@EnableWebSecurity
+public class SecurityConfig {
+    
+    @Autowired
+    private CustomUserDetailsService userDetailsService;
+    
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+    
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) 
+        throws Exception {
+        http
+            .authorizeHttpRequests(authz -> authz
+                .requestMatchers("/css/**", "/js/**", 
+                    "/images/**").permitAll()
+                .requestMatchers("/login", "/register").permitAll()
+                .requestMatchers("/engineer/**")
+                    .hasRole("ENGINEER")
+                .requestMatchers("/technician/**")
+                    .hasRole("TECHNICIAN")
+                .anyRequest().authenticated()
+            )
+            .formLogin(form -> form
+                .loginPage("/login")
+                .defaultSuccessUrl("/dashboard")
+                .permitAll()
+            )
+            .logout(logout -> logout
+                .logoutSuccessUrl("/login")
+                .permitAll()
+            );
+        return http.build();
+    }
+}
+\end{verbatim}
+
+\section{Captures d'écran de l'application}
+
+\subsection{Page de connexion}
+[Insérer capture d'écran de la page de connexion]
+
+\subsection{Tableau de bord ingénieur}
+[Insérer capture d'écran du tableau de bord]
+
+\subsection{Formulaire d'évaluation technicien}
+[Insérer capture d'écran du formulaire d'évaluation]
+
+\section{Schémas de base de données}
+
+\subsection{Modèle conceptuel de données}
+[Insérer diagramme MCD]
+
+\subsection{Modèle physique de données}
+[Insérer diagramme MPD]
+
+\section{Guide d'installation}
+
+\subsection{Prérequis}
+\begin{itemize}
+    \item Java 17 ou supérieur
+    \item Maven 3.6 ou supérieur
+    \item MySQL 8.0 ou supérieur
+    \item IDE (IntelliJ IDEA, Eclipse, VS Code)
+\end{itemize}
+
+\subsection{Étapes d'installation}
+\begin{enumerate}
+    \item Cloner le projet depuis le dépôt Git
+    \item Configurer la base de données MySQL
+    \item Modifier le fichier application.properties
+    \item Exécuter \texttt{mvn spring-boot:run}
+    \item Accéder à l'application via \texttt{http://localhost:8080}
+\end{enumerate}
+
+\section{Tests et validation}
+
+\subsection{Tests unitaires}
+[Présenter les résultats des tests unitaires]
+
+\subsection{Tests d'intégration}
+[Présenter les résultats des tests d'intégration]
+
+\subsection{Tests de performance}
+[Présenter les résultats des tests de performance]
+
+\vfill
